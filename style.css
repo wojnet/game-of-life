@@ -29,6 +29,7 @@
 
 .cols {
     width: 15px;
+    max-width: 1.5vw;
     height: auto;
     display: flex;
     flex-direction: column;
@@ -39,5 +40,6 @@
 .cells {
     width: 100%;
     height: 15px;
+    max-height: 1.5vw;
     outline: 1px solid black;
 }

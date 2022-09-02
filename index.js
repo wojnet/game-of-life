@@ -4,6 +4,7 @@ const controls = document.querySelector("#controls");
 const cols = 45;
 const rows = 45;
 var generation = 0;
+var isRunning = false;
 
 const create2DArray = (cols, rows) => {
     let array = new Array(cols);
@@ -97,6 +98,25 @@ const nextGeneration = (gridArray, nextGenGridArray) => {
     drawGeneration(generation);
 }
 
+const clear = (gridArray, nextGenGridArray, generation) => {
+    for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+            gridArray[i][j] = 0;
+            nextGenGridArray[i][j] = 0;
+        }
+    }
+    generation = 0;
+    draw(gridArray, table);
+    drawGeneration(generation);
+}
+
+var loop = setInterval(() => {
+    if (isRunning) {
+        nextGeneration(gridArray, nextGenGridArray);
+        draw(gridArray, table);
+    }
+}, 300);
+
 let gridArray = create2DArray(cols, rows);
 let nextGenGridArray = create2DArray(cols, rows);
 
@@ -131,6 +151,19 @@ const createControls = () => {
 
     //CREATE CONTROLS
 
+    const speedInput = document.createElement("input");
+    speedInput.type = "range";
+    speedInput.min = 1;
+    speedInput.max = 5;
+    speedInput.onchange = (e) => {
+        loop = setInterval(() => {
+            if (isRunning) {
+                nextGeneration(gridArray, nextGenGridArray);
+                draw(gridArray, table);
+            }
+        }, (1/e.target.value)*20000);
+    }
+
     const randomizeButton = document.createElement("button");
     randomizeButton.innerHTML = "Randomize";
     randomizeButton.onclick = () => {
@@ -138,15 +171,26 @@ const createControls = () => {
         draw(gridArray, table);
         generation = 0;
         drawGeneration(generation);
-    };
+    }
+
+    const clearButton = document.createElement("button");
+    clearButton.innerHTML = "Clear";
+    clearButton.onclick = () => {
+        clear(gridArray, nextGenGridArray, generation);
+        isRunning = false;
+    }
 
     const playButton = document.createElement("button");
     playButton.innerHTML = "PLAY";
-    playButton.disabled = 1; /* LATER */
+    playButton.onclick = () => {
+        isRunning = true;
+    }
 
     const stopButton = document.createElement("button");
     stopButton.innerHTML = "STOP";
-    stopButton.disabled = 1; /* LATER */
+    stopButton.onclick = () => {
+        isRunning = false;
+    }
 
     const nextGenerationButton = document.createElement("button");
     nextGenerationButton.innerHTML = "NEXT";
@@ -158,7 +202,9 @@ const createControls = () => {
 
     //APPEND CONTROLS
 
+    controls.appendChild(speedInput);
     controls.appendChild(randomizeButton);
+    controls.appendChild(clearButton);
     controls.appendChild(playButton);
     controls.appendChild(stopButton);
     controls.appendChild(nextGenerationButton);
